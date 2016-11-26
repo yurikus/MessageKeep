@@ -25,6 +25,12 @@ namespace MessageKeep
             Console.WriteLine("Press Ctrl-Q to exit.");
             Console.WriteLine("Running with args: " + parser_.FormatCommandLine(opts_));
 
+            if (opts_.Port <= ushort.MinValue || opts_.Port > ushort.MaxValue)
+            {
+                Console.WriteLine("ERROR: Invalid value for --port");
+                return;
+            }
+
             var app = new AppCore();
             app.Start(opts_);
 

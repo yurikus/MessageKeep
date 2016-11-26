@@ -99,10 +99,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CmdLineOptions.cs" />
-    <Compile Include="AppCore.cs" />
-    <Compile Include="Controllers\StatusController.cs" />
-    <Compile Include="Program.cs" />
+    <Compile Include="Scaffolding\CmdLineOptions.cs" />
+    <Compile Include="Scaffolding\AppCore.cs" />
+    <Compile Include="Controllers\ServiceController.cs" />
+    <Compile Include="Scaffolding\Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -9,7 +9,7 @@ using System.Web.Http;
 namespace MessageKeep.Controllers
 {
     [RoutePrefix("service")]
-    public class StatusController : ApiController
+    public class ServiceController : ApiController
     {
         [HttpGet, Route("status")]
         public IHttpActionResult GetStatus()

@@ -38,8 +38,8 @@ namespace MessageKeep
 
             var di = new DryIoc.Container();
             di.WithWebApi(config);
-
             app_.UseDryIocOwinMiddleware(di);
+
             app_.UseWebApi(config);
         }
     }
