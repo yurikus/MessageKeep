@@ -44,10 +44,7 @@ namespace MessageKeep
 
             var di = new DryIoc.Container();
             di.RegisterInstance<IServiceConfig>(new ServiceConfig(), Reuse.Singleton);
-            di.RegisterInstance<IUserStore>(new UserStore(), Reuse.Singleton);
-            di.RegisterInstance<IChannelStore>(new ChannelStore(), Reuse.Singleton);
-            di.RegisterInstance<IMessageStore>(new MessageStore(), Reuse.Singleton);
-            di.Register<Message>();
+            di.RegisterInstance<IBackStore>(new BackStore(), Reuse.Singleton);
 
             di.WithWebApi(config);
             app_.UseDryIocOwinMiddleware(di);

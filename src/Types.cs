@@ -11,36 +11,28 @@ namespace MessageKeep.Types
         string bitness { get; }
     }
 
-    public interface IUserStore
+    public interface IBackStore
     {
-        IUser Get(string username_);
-        IEnumerable<IUser> List();
+        OpStatus Subscribe(string username_, string channel_);
+        OpStatus UnSubscribe(string username_, string channel_);
+        OpStatus PushDirect(string username_, string author_, string content_);
+        OpStatus PushBroadcast(string channel_, string author_, string content_);
     }
 
     public interface IUser
     {
+        string Username { get; }
         void Receive(IMessage msg_);
         void Subscribe(IChannel channel_);
         void Unsubscribe(IChannel channel_);
     }
 
-    public interface IChannelStore
-    {
-        IChannel Get(string channel_);
-        IEnumerable<IChannel> List();
-    }
-
     public interface IChannel
     {
+        string Title { get; }
         void Broadcast(IMessage msg_);
         void Add(IUser user_);
         void Remove(IUser user_);
-    }
-
-    public interface IMessageStore
-    {
-        IMessage Create(string author_, string content_);
-        IMessage Get(int messageId_);
     }
 
     public interface IMessage

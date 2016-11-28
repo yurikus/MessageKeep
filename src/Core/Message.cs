@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,19 +9,6 @@ using MessageKeep.Types;
 
 namespace MessageKeep.Core
 {
-    class MessageStore : IMessageStore
-    {
-        public IMessage Create(string author_, string content_)
-        {
-            throw new NotImplementedException();
-        }
-
-        public IMessage Get(int messageId_)
-        {
-            throw new NotImplementedException();
-        }
-    }
-
     class Message : IMessage
     {
         readonly int m_id = DateTime.UtcNow.GetHashCode();
@@ -45,6 +33,20 @@ namespace MessageKeep.Core
                 return;
 
             m_receivedOnUtc = DateTime.UtcNow;
+        }
+
+        public override int GetHashCode()
+        {
+            return m_id;
+        }
+
+        public override bool Equals(object otherObj_)
+        {
+            var other = otherObj_ as IMessage;
+            if (other == null)
+                return false;
+
+            return Id == other.Id;
         }
     }
 }

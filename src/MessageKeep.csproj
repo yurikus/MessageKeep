@@ -103,6 +103,8 @@
   <ItemGroup>
     <Compile Include="Controllers\ChannelController.cs" />
     <Compile Include="Controllers\UserController.cs" />
+    <Compile Include="Core\BackStore.cs" />
+    <Compile Include="OpStatus.cs" />
     <Compile Include="Core\Message.cs" />
     <Compile Include="Core\ServiceConfig.cs" />
     <Compile Include="Core\Channel.cs" />

@@ -9,29 +9,10 @@ using MessageKeep.Types;
 
 namespace MessageKeep.Core
 {
-    class ChannelStore : IChannelStore
-    {
-        readonly ConcurrentDictionary<string, IChannel> m_channels;
-
-        public ChannelStore()
-        {
-            m_channels = new ConcurrentDictionary<string, IChannel>();
-        }
-
-        public IChannel Get(string channel_)
-        {
-            return m_channels.GetOrAdd(channel_, itm => new Channel(channel_));
-        }
-
-        public IEnumerable<IChannel> List()
-        {
-            throw new NotImplementedException();
-        }
-    }
-
     class Channel : IChannel
     {
-        readonly List<IUser> m_users = new List<IUser>();
+        readonly HashSet<IUser> m_users = new HashSet<IUser>();
+        readonly HashSet<IMessage> m_messages = new HashSet<IMessage>();
 
         public Channel(string title_)
         {
@@ -52,7 +33,7 @@ namespace MessageKeep.Core
 
         public void Broadcast(IMessage msg_)
         {
-            m_users.ForEach(itm => itm.Receive(msg_));
+//            m_users.ForEach(itm => itm.Receive(msg_));
         }
     }
 }

@@ -13,28 +13,24 @@ namespace MessageKeep.Controllers
     public class UserController : ApiController
     {
         readonly IServiceConfig m_cfg;
-        readonly IUserStore m_users;
-        readonly IChannelStore m_channels;
+        readonly IBackStore m_store;
 
-        public UserController(IServiceConfig cfg_, IUserStore users_, IChannelStore channels_)
+        public UserController(IServiceConfig cfg_, IBackStore store_)
         {
             m_cfg = cfg_;
-            m_users = users_;
-            m_channels = channels_;
+            m_store = store_;
         }
 
-        [HttpPut, Route("{username_}/channel/{channelTitle_}")]
-        IHttpActionResult Subscribe(string username_, string channelTitle_)
+        [HttpPut, Route("{username_}/channel/{channel_}")]
+        public IHttpActionResult Subscribe(string username_, string channel_)
         {
-            
-
-            return Ok();
+            return Ok(m_store.Subscribe(username_, channel_));
         }
 
-        [HttpDelete, Route("{username_}/channel/{channelTitle_}")]
-        IHttpActionResult UnSubscribe(string username_, string channelTitle_)
+        [HttpDelete, Route("{username_}/channel/{channel_}")]
+        public IHttpActionResult UnSubscribe(string username_, string channel_)
         {
-            return Ok();
+            return Ok(m_store.UnSubscribe(username_, channel_));
         }
     }
 }
