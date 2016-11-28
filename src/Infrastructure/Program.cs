@@ -1,7 +1,5 @@
 ﻿using System;
-
 using CommandLine;
-using CommandLine.Text;
 
 namespace MessageKeep
 {
@@ -16,7 +14,6 @@ namespace MessageKeep
             });
 
             parser.ParseArguments<CmdLineOptions>(args_)
-                .WithNotParsed(err => Environment.Exit(-1))
                 .WithParsed(opts => Run(parser, opts));
         }
 

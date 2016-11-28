@@ -8,8 +8,12 @@ using System.Web.Http;
 using Owin;
 using Microsoft.Owin.Hosting;
 
+using DryIoc;
 using DryIoc.Owin;
 using DryIoc.WebApi;
+
+using MessageKeep.Types;
+using MessageKeep.Core;
 
 namespace MessageKeep
 {
@@ -24,6 +28,8 @@ namespace MessageKeep
 
             var url = "http://" + (m_opts.IsPublic ? "+" : "localhost") + ":" + m_opts.Port;
             m_svc = WebApp.Start(url, Configure);
+
+            Console.WriteLine("Listening on " + url);
         }
 
         public void Stop()
@@ -37,6 +43,12 @@ namespace MessageKeep
             config.MapHttpAttributeRoutes();
 
             var di = new DryIoc.Container();
+            di.RegisterInstance<IServiceConfig>(new ServiceConfig(), Reuse.Singleton);
+            di.RegisterInstance<IUserStore>(new UserStore(), Reuse.Singleton);
+            di.RegisterInstance<IChannelStore>(new ChannelStore(), Reuse.Singleton);
+            di.RegisterInstance<IMessageStore>(new MessageStore(), Reuse.Singleton);
+            di.Register<Message>();
+
             di.WithWebApi(config);
             app_.UseDryIocOwinMiddleware(di);
 
