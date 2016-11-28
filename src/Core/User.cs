@@ -46,7 +46,7 @@ namespace MessageKeep.Core
             lock (SyncRoot)
             {
                 m_messages.Add(msg_.Id, msg_);
-                msg_.MarkReceived();
+                msg_.MarkDelivered();
             }
         }
 

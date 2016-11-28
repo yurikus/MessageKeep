@@ -11,15 +11,15 @@ namespace MessageKeep.Core
 {
     class BackStore : IBackStore
     {
-        // msgId => set<message>
-        readonly ConcurrentDictionary<int, HashSet<IMessage>> m_messages;
+        // username => user's messages
+        readonly ConcurrentDictionary<string, HashSet<IMessage>> m_messages;
 
-        // channel => set<username>
+        // channel => channel users
         readonly ConcurrentDictionary<string, HashSet<string>> m_chanSubs;
 
         public BackStore()
         {
-            m_messages = new ConcurrentDictionary<int, HashSet<IMessage>>();
+            m_messages = new ConcurrentDictionary<string, HashSet<IMessage>>();
             m_chanSubs = new ConcurrentDictionary<string, HashSet<string>>();
         }
 
@@ -47,12 +47,44 @@ namespace MessageKeep.Core
 
         public OpStatus PushDirect(string username_, string author_, string content_)
         {
+            var msgs = m_messages.GetOrAdd(username_, _ => new HashSet<IMessage>());
+
+            lock (msgs)
+            {
+                var msg = new Message(author_, content_);
+                msgs.Add(msg);
+                msg.MarkDelivered();
+            }
 
             return OpStatus.Ok;
         }
 
         public OpStatus PushBroadcast(string channel_, string author_, string content_)
         {
+            HashSet<string> users = null;
+            if (!m_chanSubs.TryGetValue(channel_, out users))
+                return OpStatus.NotSubscribed;
+
+            string[] usersLocal = null;
+            lock (users)
+            {
+                if (!users.Contains(author_))
+                    return OpStatus.NotSubscribed;
+
+                users.CopyTo(usersLocal);
+            }
+
+            foreach (var user in usersLocal)
+            {
+                var msgs = m_messages.GetOrAdd(user, _ => new HashSet<IMessage>());
+                lock (msgs)
+                {
+                    var msg = new Message(author_, content_);
+                    msgs.Add(msg);
+                    msg.MarkDelivered();
+                }
+            }
+
             return OpStatus.Ok;
         }
     }
