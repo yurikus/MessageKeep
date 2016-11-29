@@ -107,8 +107,6 @@
     <Compile Include="OpStatus.cs" />
     <Compile Include="Core\Message.cs" />
     <Compile Include="Core\ServiceConfig.cs" />
-    <Compile Include="Core\Channel.cs" />
-    <Compile Include="Core\User.cs" />
     <Compile Include="Types.cs" />
     <Compile Include="Infrastructure\CmdLineOptions.cs" />
     <Compile Include="AppCore.cs" />

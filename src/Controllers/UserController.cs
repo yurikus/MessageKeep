@@ -32,5 +32,17 @@ namespace MessageKeep.Controllers
         {
             return Ok(m_store.UnSubscribe(username_, channel_));
         }
+
+        [HttpPost, Route("{username_}/messages/to/{recipient_}")]
+        public IHttpActionResult PushDirect(string username_, string recipient_, [FromBody] string content_)
+        {
+            return Ok(m_store.PushDirect(recipient_, username_, content_));
+        }
+
+        [HttpPost, Route("{username_}/channel/{channel_}")]
+        public IHttpActionResult PushBroadcast(string username_, string channel_, [FromBody] string content_)
+        {
+            return Ok(m_store.PushBroadcast(username_, channel_, content_));
+        }
     }
 }

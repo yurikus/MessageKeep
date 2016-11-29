@@ -13,26 +13,13 @@ namespace MessageKeep.Types
 
     public interface IBackStore
     {
+        IList<string> Users { get; }
+        IList<string> Channels { get; }
+        IList<string> ChannelUsers(string channel_);
         OpStatus Subscribe(string username_, string channel_);
         OpStatus UnSubscribe(string username_, string channel_);
         OpStatus PushDirect(string username_, string author_, string content_);
-        OpStatus PushBroadcast(string channel_, string author_, string content_);
-    }
-
-    public interface IUser
-    {
-        string Username { get; }
-        void Receive(IMessage msg_);
-        void Subscribe(IChannel channel_);
-        void Unsubscribe(IChannel channel_);
-    }
-
-    public interface IChannel
-    {
-        string Title { get; }
-        void Broadcast(IMessage msg_);
-        void Add(IUser user_);
-        void Remove(IUser user_);
+        OpStatus PushBroadcast(string author_, string channel_, string content_);
     }
 
     public interface IMessage
@@ -58,14 +45,14 @@ namespace MessageKeep.Types
     GET      /users/<user>/messages                       last 100 user messages (direct or broadcast)
     GET      /users/<user>/messages[?skip=<x>&count=<y>]  at most <y> user messages starting from <x> (direct or broadcast)
     GET      /users/<user>/messages/since/<date>          user messages since <date> (direct or broadcast)
-    GET      /users/<user>/messages/<id>                  get pecific message
+    GET      /users/<user>/messages/<id>                  get specific message
     GET      /users/<user>/messages/to/<user2>            list of user messages to user2
-    POST     /users/<user>/messages/to/<user2>            post message to user2
++   POST     /users/<user>/messages/to/<user2>            post message to user2
     
 +   PUT      /users/<user>/channel/<chan>                 subscribe user to channel
 +   DELETE   /users/<user>/channel/<chan>                 unsubscibe user from channel
     GET      /users/<user>/channel/<chan>                 list if user messages in the channel
-    POST     /users/<user>/channel/<chan>                 post a message to channel
++   POST     /users/<user>/channel/<chan>                 post a message to channel
         
                                                            
     GET      /channels                                    list of channels

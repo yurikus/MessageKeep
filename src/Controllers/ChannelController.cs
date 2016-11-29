@@ -13,8 +13,9 @@ namespace MessageKeep.Controllers
     public class ChannelController : ApiController
     {
         readonly IServiceConfig m_cfg;
+        readonly IBackStore m_store;
 
-        public ChannelController(IServiceConfig cfg_)
+        public ChannelController(IServiceConfig cfg_, IBackStore store_)
         {
             m_cfg = cfg_;
         }
