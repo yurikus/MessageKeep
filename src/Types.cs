@@ -34,25 +34,3 @@ namespace MessageKeep.Types
         void MarkDelivered();
     }
 }
-
-/*
-This application implements a hypothetical cloud user/message/channel management service. 
-
-##Endpoints:
-
-+   GET      /users                                       list of users
-+   GET      /users/<user>                                summary of user's subbed channels and dm
-    
-+   GET      /users/<user>/messages                       user's messages (direct or broadcast)
-+   GET      /users/<user>/messages/to/<user2>            list of user messages to user2
-+   POST     /users/<user>/messages/to/<user2>            post message to user2
-    
-+   PUT      /users/<user>/channel/<chan>                 subscribe user to channel
-+   DELETE   /users/<user>/channel/<chan>                 unsubscibe user from channel
-+   POST     /users/<user>/channel/<chan>                 post a message to channel
-                                                           
-+   GET      /channels                                    list of channels
-+   GET      /channels/<chan>/users                       summary of subbed users and message count
-+   GET      /channels/<chan>/messages                    broadcast messages for the channel
-                                                      
-*/
