@@ -1,6 +1,6 @@
 # MessageKeep
 
-This application implements a hypothetical cloud user/message/channel management service. 
+This application implements a hypothetical cloud user/message/channel management service. It is self-hosting with Owin/Katana and uses WebAPI 2, NewtonSoft JSON and DryIoc DI container. Test project uses XUnit and VisualStudio runner. This is a VisualStudio 2015 solution.
 
 ## Running
 Running without arguments will produce the following page of helpful text:  
@@ -25,18 +25,18 @@ Which hints at using `--port` argument to specify port to listen on:
 
 Available endpoints, appropriate HTTP verbs and summary for each is presented below: 
 
-    GET      /users                                    list of users
-    GET      /users/<user>                             summary of user's subbed channels and dm
-    GET      /users/<user>/messages                    user's messages (direct or broadcast)
-    GET      /users/<user>/messages/to/<user2>         list of user messages to user2
-    POST     /users/<user>/messages/to/<user2>         post message to user2
-    PUT      /users/<user>/channel/<chan>              subscribe user to channel
-    DELETE   /users/<user>/channel/<chan>              unsubscibe user from channel
-    POST     /users/<user>/channel/<chan>              post a message to channel
+    GET      /mk/users                                    list of users
+    GET      /mk/users/<user>                             summary of user's channels
+    GET      /mk/users/<user>/messages                    user's messages (direct or broadcast)
+    GET      /mk/users/<user>/messages/to/<user2>         list of user messages to user2
+    POST     /mk/users/<user>/messages/to/<user2>         post message to user2
+    PUT      /mk/users/<user>/channel/<chan>              subscribe user to channel
+    DELETE   /mk/users/<user>/channel/<chan>              unsubscibe user from channel
+    POST     /mk/users/<user>/channel/<chan>              broadcast message to channel
                                                         
-    GET      /channels                                 list of channels
-    GET      /channels/<chan>/users                    summary of subbed users and message count
-    GET      /channels/<chan>/messages                 broadcast messages for the channel
+    GET      /mk/channels                                 list of channels
+    GET      /mk/channels/<chan>/users                    summary of subbed users
+    GET      /mk/channels/<chan>/messages                 list broadcast messages for the channel
 
 ## Content types
 
@@ -44,4 +44,5 @@ Input content type is expected to be and output content types is generated as `a
 
 ## Notes
 
-Miscellaneous notes are sprinkled in code where I thought a clarification would be of benefit. Otherwise I think code is fairly self-describing.
+- Miscellaneous notes are sprinkled in code where I thought a clarification would be of benefit. Otherwise I think code is fairly self-describing.
+- Scripts in the `curl/` directory do a quick visual test of functionality. They expect app listening on port `8065` and a linux, LXSS, CYGWIN or MSYS environment as well as jq json pretty-printer (https://stedolan.github.io/jq/download/, use 32-bit version on x64 Windows). Binary is bundled in `curl/jq`.

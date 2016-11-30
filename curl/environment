@@ -1,0 +1,4 @@
+#!/bin/bash
+opts=-sSL
+host=http://localhost:8065/mk
+jq='jq/jq .'

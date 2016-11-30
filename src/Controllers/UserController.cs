@@ -14,7 +14,7 @@ using MessageKeep.Types;
 
 namespace MessageKeep.Controllers
 {
-    [RoutePrefix("users")]
+    [RoutePrefix("mk/users")]
     public class UserController : ApiController
     {
         readonly IBackStore m_store;
@@ -56,6 +56,20 @@ namespace MessageKeep.Controllers
                 jtw.WriteStartArray();
 
                 foreach (var msg in m_store.UserMessages(username_))
+                    msg.ToJson(jtw);
+
+                jtw.WriteEnd();
+            });
+        }
+
+        [HttpGet, Route("{username_}/messages/since/{startDate_}")]
+        public HttpResponseMessage UserMessageList(string username_, DateTime startDate_)
+        {
+            return this.JsonStream(jtw =>
+            {
+                jtw.WriteStartArray();
+
+                foreach (var msg in m_store.UserMessagesSince(username_, startDate_))
                     msg.ToJson(jtw);
 
                 jtw.WriteEnd();

@@ -14,7 +14,9 @@ namespace MessageKeep.Types
         IList<string> ChannelUsers(string channel_);
         IList<string> UserChannels(string username_);
         IList<IMessage> UserMessages(string username_);
+        IList<IMessage> UserMessagesSince(string username_, DateTime startDate_);
         IList<IMessage> ChannelMessages(string channel_);
+        IList<IMessage> ChannelMessagesSince(string channel_, DateTime startDate_);
         IList<IMessage> DirectMessages(string sender_, string recipient_);
 
         OpStatus Subscribe(string username_, string channel_);

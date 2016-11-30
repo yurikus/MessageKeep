@@ -83,8 +83,33 @@ namespace MessageKeep.Core
             var channels = UserChannels(username_);
 
             return m_messages
-                .Where(msg => 
+                .Where(msg =>
                 {
+                    if (msg.IsDirect)
+                    {
+                        if (msg.Recipient == username_)
+                            return true;
+                    }
+                    else
+                    {
+                        if (channels.Contains(msg.Recipient))
+                            return true;
+                    }
+
+                    return false;
+                }).ToList();
+        }
+
+        public IList<IMessage> UserMessagesSince(string username_, DateTime startDate_)
+        {
+            var channels = UserChannels(username_);
+
+            return m_messages
+                .Where(msg =>
+                {
+                    if (msg.DeliveredUtc < startDate_)
+                        return false;
+
                     if (msg.IsDirect)
                     {
                         if (msg.Recipient == username_)
@@ -104,6 +129,13 @@ namespace MessageKeep.Core
         {
             return m_messages
                 .Where(msg => !msg.IsDirect && msg.Recipient == channel_)
+                .ToList();
+        }
+
+        public IList<IMessage> ChannelMessagesSince(string channel_, DateTime startDate_)
+        {
+            return m_messages
+                .Where(msg => !msg.IsDirect && msg.Recipient == channel_ && msg.DeliveredUtc >= startDate_)
                 .ToList();
         }
 

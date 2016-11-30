@@ -1,0 +1,41 @@
+#!/bin/bash
+. ./environment
+
+printf "Users: "
+curl $opts -XGET $host/users
+
+printf "\nChannels: "
+curl $opts -XGET $host/channels
+
+printf "\nch1 users: "
+curl $opts -XGET $host/channels/ch1/users
+
+printf "\nch2 users: "
+curl $opts -XGET $host/channels/ch2/users
+
+printf "\nch3 users: "
+curl $opts -XGET $host/channels/ch3/users
+
+printf "\nu1 info: "
+curl $opts -XGET $host/users/u1 | $jq
+
+printf "\nu2 info: "
+curl $opts -XGET $host/users/u2 | $jq
+
+printf "\nAll messages for u1: "
+curl $opts -XGET $host/users/u1/messages | $jq
+
+printf "\nu1 DMs to u2:"
+curl $opts -XGET $host/users/u1/messages/to/u2 | $jq
+
+printf "\nAll messages for u2: "
+curl $opts -XGET $host/users/u2/messages | $jq
+
+printf "\nMessages for ch1: "
+curl $opts -XGET $host/channels/ch1/messages | $jq
+
+printf "\nMessages for ch2: "
+curl $opts -XGET $host/channels/ch2/messages | $jq
+
+printf "\nMessages for ch3: "
+curl $opts -XGET $host/channels/ch3/messages | $jq

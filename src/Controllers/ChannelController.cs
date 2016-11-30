@@ -13,7 +13,7 @@ using MessageKeep.Types;
 
 namespace MessageKeep.Controllers
 {
-    [RoutePrefix("channels")]
+    [RoutePrefix("mk/channels")]
     public class ChannelController : ApiController
     {
         readonly IBackStore m_store;
@@ -60,6 +60,20 @@ namespace MessageKeep.Controllers
                 jtw.WriteStartArray();
 
                 foreach (var msg in m_store.ChannelMessages(channel_))
+                    msg.ToJson(jtw);
+
+                jtw.WriteEnd();
+            });
+        }
+
+        [HttpGet, Route("{channel_}/messages/since/{startDate_}")]
+        public HttpResponseMessage ChannelMessageList(string channel_, DateTime startDate_)
+        {
+            return this.JsonStream(jtw =>
+            {
+                jtw.WriteStartArray();
+
+                foreach (var msg in m_store.ChannelMessagesSince(channel_, startDate_))
                     msg.ToJson(jtw);
 
                 jtw.WriteEnd();
