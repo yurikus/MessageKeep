@@ -14,7 +14,7 @@ using MessageKeep.Types;
 
 namespace MessageKeep.Controllers
 {
-    [RoutePrefix("mk/users")]
+    [RoutePrefix("mk/users"), ValidateModel]
     public class UserController : ApiController
     {
         readonly IBackStore m_store;

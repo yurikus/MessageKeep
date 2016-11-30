@@ -174,7 +174,7 @@ namespace MessageKeep.Core
             return OpStatus.Ok;
         }
 
-        public OpStatus PushDirect(string sender_, string recipient_, string content_)
+        public Tuple<OpStatus, uint> PushDirect(string sender_, string recipient_, string content_)
         {
             lock (m_users)
             {
@@ -191,26 +191,23 @@ namespace MessageKeep.Core
                 msg.MarkDelivered();
             }
 
-            return OpStatus.Ok;
+            return Tuple.Create(OpStatus.Ok, msg.Id);
         }
 
-        public OpStatus PushBroadcast(string sender_, string channel_, string content_)
+        public Tuple<OpStatus, uint> PushBroadcast(string sender_, string channel_, string content_)
         {
             var channelUsers = ChannelUsers(channel_);
             if (!channelUsers.Contains(sender_))
-                return OpStatus.NotSubscribed;
+                return Tuple.Create(OpStatus.NotSubscribed, (uint) 0);
 
-            foreach (var user in channelUsers)
+            var msg = new Message(sender_, content_, channel_, false);
+            lock (m_messages)
             {
-                var msg = new Message(sender_, content_, channel_, false);
-                lock (m_messages)
-                {
-                    m_messages.Add(msg);
-                    msg.MarkDelivered();
-                }
+                m_messages.Add(msg);
+                msg.MarkDelivered();
             }
 
-            return OpStatus.Ok;
+            return Tuple.Create(OpStatus.Ok, msg.Id);
         }
     }
 }

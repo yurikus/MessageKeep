@@ -12,7 +12,7 @@ namespace MessageKeep.Core
 {
     class Message : IMessage
     {
-        readonly uint m_id = (uint) DateTime.UtcNow.GetHashCode();
+        readonly uint m_id;
         readonly string m_sender;
         readonly string m_content;
         readonly string m_recipient;
@@ -25,6 +25,14 @@ namespace MessageKeep.Core
             m_content = content_;
             m_recipient = recipient_;
             m_isDirect = isDirect_;
+
+            unchecked
+            {
+                m_id = 17;
+                m_id = m_id * 23 + (uint) m_sender.GetHashCode();
+                m_id = m_id * 23 + (uint) m_recipient.GetHashCode();
+                m_id = m_id * 23 + (uint) m_isDirect.GetHashCode();
+            }
         }
 
         public uint Id => m_id;

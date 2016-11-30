@@ -21,8 +21,8 @@ namespace MessageKeep.Types
 
         OpStatus Subscribe(string username_, string channel_);
         OpStatus UnSubscribe(string username_, string channel_);
-        OpStatus PushDirect(string sender_, string recipient_, string content_);
-        OpStatus PushBroadcast(string sender_, string channel_, string content_);
+        Tuple<OpStatus, uint> PushDirect(string sender_, string recipient_, string content_);
+        Tuple<OpStatus, uint> PushBroadcast(string sender_, string channel_, string content_);
     }
 
     public interface IMessage

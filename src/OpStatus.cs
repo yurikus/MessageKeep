@@ -10,6 +10,7 @@ namespace MessageKeep.Types
     {
         Ok,
         NotSubScribed,
+        InvalidArguments
     }
 
     public class OpStatus
@@ -27,6 +28,12 @@ namespace MessageKeep.Types
         {
             code = eOpStatus.NotSubScribed,
             message = "User is not subscribed to this channel"
+        };
+
+        public static OpStatus InvalidArguments = new OpStatus()
+        {
+            code = eOpStatus.InvalidArguments,
+            message = "Some request arguments are invalid"
         };
     }
 }

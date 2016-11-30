@@ -123,7 +123,7 @@ namespace MessageKeep.Tests
 
             var ret = store.PushBroadcast(username_, channel_, "broadcast message");
 
-            Assert.Equal(eOpStatus.Ok, ret.code);
+            Assert.Equal(eOpStatus.Ok, ret.Item1.code);
         }
 
         [Theory]
@@ -139,7 +139,102 @@ namespace MessageKeep.Tests
 
             Assert.DoesNotContain(username_, store.ChannelUsers(channel_));
 
-            Assert.Equal(eOpStatus.NotSubScribed, ret.code);
+            Assert.Equal(eOpStatus.NotSubScribed, ret.Item1.code);
+        }
+
+        [Fact]
+        public void broadcast_creates_message_other_users_can_see()
+        {
+            IBackStore store = new BackStore();
+
+            store.Subscribe("user-1", "channel-1");
+            store.Subscribe("user-2", "channel-1");
+
+            var ret = store.PushBroadcast("user-1", "channel-1", "broadcast message");
+
+            Assert.Contains(store.UserMessages("user-1"), itm => itm.Id == ret.Item2);
+            Assert.Contains(store.UserMessages("user-2"), itm => itm.Id == ret.Item2);
+        }
+
+        [Fact]
+        public void channel_broadcasts_only_to_subbed_users()
+        {
+            IBackStore store = new BackStore();
+
+            store.Subscribe("user-1", "channel-1");
+            store.Subscribe("user-2", "channel-2");
+
+            var ret = store.PushBroadcast("user-1", "channel-1", "broadcast message");
+
+            Assert.Contains(store.UserMessages("user-1"), itm => itm.Id == ret.Item2);
+            Assert.DoesNotContain(store.UserMessages("user-2"), itm => itm.Id == ret.Item2);
+        }
+
+        [Fact]
+        public void channel_broadcast_has_messages_from_multiple_users()
+        {
+            IBackStore store = new BackStore();
+
+            store.Subscribe("user-1", "channel-1");
+            store.Subscribe("user-2", "channel-1");
+
+            var ret1 = store.PushBroadcast("user-1", "channel-1", "broadcast message 1");
+            var ret2 = store.PushBroadcast("user-2", "channel-1", "broadcast message 2");
+
+            Assert.Contains(store.ChannelMessages("channel-1"), itm => itm.Id == ret1.Item2);
+            Assert.Contains(store.ChannelMessages("channel-1"), itm => itm.Id == ret2.Item2);
+        }
+
+        [Fact]
+        public void direct_message_sends_message()
+        {
+            IBackStore store = new BackStore();
+
+            var ret = store.PushDirect("user-1", "user-2", "DM 1");
+
+            Assert.Contains(store.UserMessages("user-2"), itm => itm.Id == ret.Item2);
+        }
+
+        [Fact]
+        public void direct_message_to_yourself()
+        {
+            IBackStore store = new BackStore();
+
+            var ret = store.PushDirect("user-1", "user-1", "DM yourself");
+
+            Assert.Contains(store.UserMessages("user-1"), itm => itm.Id == ret.Item2);
+        }
+
+        [Fact]
+        public void direct_message_sends_message_only_to_recipient()
+        {
+            IBackStore store = new BackStore();
+
+            var ret1 = store.PushDirect("user-1", "user-2", "DM 1");
+            var ret2 = store.PushDirect("user-2", "user-3", "DM 2");
+
+            Assert.Contains(store.UserMessages("user-2"), itm => itm.Id == ret1.Item2);
+            Assert.Contains(store.UserMessages("user-3"), itm => itm.Id == ret2.Item2);
+
+            Assert.DoesNotContain(store.UserMessages("user-2"), itm => itm.Id == ret2.Item2);
+            Assert.DoesNotContain(store.UserMessages("user-3"), itm => itm.Id == ret1.Item2);
+        }
+
+        [Fact]
+        public void direct_message_sends_only_direct_doesnot_touch_channel()
+        {
+            IBackStore store = new BackStore();
+
+            store.Subscribe("user-1", "channel-1");
+            store.Subscribe("user-2", "channel-2");
+            store.Subscribe("user-3", "channel-1");
+            store.Subscribe("user-3", "channel-2");
+
+            var ret1 = store.PushDirect("user-1", "user-2", "DM 1");
+            var ret2 = store.PushDirect("user-2", "user-3", "DM 2");
+
+            Assert.DoesNotContain(store.ChannelMessages("chanel-1"), itm => itm.Id == ret1.Item2);
+            Assert.DoesNotContain(store.ChannelMessages("chanel-1"), itm => itm.Id == ret2.Item2);
         }
     }
 }
