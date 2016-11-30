@@ -42,7 +42,7 @@ Available endpoints, appropriate HTTP verbs and summary for each is presented be
 
 ## Content types
 
-Input content type is expected to be and output content types is generated as `application/json`, hence when using `curl` a `content-type: application/json` header would be necessary.
+Input content type is expected to be and output content types is generated as `application/json`, hence when using `curl` a `content-type: application/json` header would be necessary. `POST` requests expect a literal string `"message"`, without a root object.
 
 ## Notes
 
