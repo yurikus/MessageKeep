@@ -104,13 +104,12 @@
     <Compile Include="Controllers\ChannelController.cs" />
     <Compile Include="Controllers\UserController.cs" />
     <Compile Include="Core\BackStore.cs" />
+    <Compile Include="Extensions.cs" />
     <Compile Include="OpStatus.cs" />
     <Compile Include="Core\Message.cs" />
-    <Compile Include="Core\ServiceConfig.cs" />
     <Compile Include="Types.cs" />
     <Compile Include="Infrastructure\CmdLineOptions.cs" />
     <Compile Include="AppCore.cs" />
-    <Compile Include="Controllers\ServiceController.cs" />
     <Compile Include="Infrastructure\Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

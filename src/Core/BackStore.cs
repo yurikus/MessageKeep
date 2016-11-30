@@ -13,8 +13,12 @@ namespace MessageKeep.Core
     {
         readonly HashSet<string> m_users;
 
-        // username => user's messages
-        readonly ConcurrentDictionary<string, HashSet<IMessage>> m_messages;
+        // I opted for a single message store vs message queue per user channel.
+        // This simplifies things a bit by using flags on the message instance to
+        // distinguish direct vs broadcast. It also comes with a couple of drawbacks: 
+        // not having distict delivery timers per user and temporarity lost history
+        // of messages broadcast to a channel after user unsubscribes from it.
+        readonly HashSet<IMessage> m_messages;
 
         // channel => channel users
         readonly ConcurrentDictionary<string, HashSet<string>> m_chanSubs;
@@ -22,7 +26,7 @@ namespace MessageKeep.Core
         public BackStore()
         {
             m_users = new HashSet<string>();
-            m_messages = new ConcurrentDictionary<string, HashSet<IMessage>>();
+            m_messages = new HashSet<IMessage>();
             m_chanSubs = new ConcurrentDictionary<string, HashSet<string>>();
         }
 
@@ -31,9 +35,8 @@ namespace MessageKeep.Core
             get
             {
                 // We want to avoid long lock on the users collection.
-                // We're also reasonable sure that locking on the object itself
+                // We're also reasonably sure that locking on the object itself
                 // is side-effect-free, since we own it and don't give refs out.
-
                 lock (m_users)
                 {
                     var usersLocal = new string[m_users.Count];
@@ -67,14 +70,57 @@ namespace MessageKeep.Core
             }
         }
 
+        public IList<string> UserChannels(string username_)
+        {
+            return m_chanSubs
+                .Where(itm => itm.Value.Contains(username_))
+                .Select(itm => itm.Key).ToList();
+        }
+
+        public IList<IMessage> UserMessages(string username_)
+        {
+            var channels = UserChannels(username_);
+
+            return m_messages
+                .Where(msg => 
+                {
+                    if (msg.IsDirect)
+                    {
+                        if (msg.Recipient == username_)
+                            return true;
+                    }
+                    else
+                    {
+                        if (channels.Contains(msg.Recipient))
+                            return true;
+                    }
+
+                    return false;
+                }).ToList();
+        }
+
+        public IList<IMessage> ChannelMessages(string channel_)
+        {
+            return m_messages
+                .Where(msg => !msg.IsDirect && msg.Recipient == channel_)
+                .ToList();
+        }
+
+        public IList<IMessage> DirectMessages(string sender_, string recipient_)
+        {
+            return m_messages
+                .Where(msg => msg.IsDirect && msg.Sender == sender_ && msg.Recipient == recipient_)
+                .ToList();
+        }
+
         public OpStatus Subscribe(string username_, string channel_)
         {
-            var users = m_chanSubs.GetOrAdd(channel_, _ => new HashSet<string>());
+            var channelUsers = m_chanSubs.GetOrAdd(channel_, _ => new HashSet<string>());
 
             lock (m_users)
             {
                 m_users.Add(username_);
-                users.Add(username_);
+                channelUsers.Add(username_);
             }
 
             return OpStatus.Ok;
@@ -82,62 +128,51 @@ namespace MessageKeep.Core
 
         public OpStatus UnSubscribe(string username_, string channel_)
         {
-            HashSet<string> users = null;
-            if (m_chanSubs.TryGetValue(channel_, out users))
+            HashSet<string> channelUsers = null;
+            if (m_chanSubs.TryGetValue(channel_, out channelUsers))
             {
                 lock (m_users)
                 {
                     m_users.Remove(username_);
-                    users.Remove(username_);
+                    channelUsers.Remove(username_);
                 }
             }
 
             return OpStatus.Ok;
         }
 
-        public OpStatus PushDirect(string username_, string author_, string content_)
+        public OpStatus PushDirect(string sender_, string recipient_, string content_)
         {
-            var msgs = m_messages.GetOrAdd(username_, _ => new HashSet<IMessage>());
-            lock (msgs)
+            lock (m_users)
             {
-                // deadlock warning: lock(msgs) when locked on m_users
-                lock (m_users)
-                {
-                    m_users.Add(username_);
-                    m_users.Add(author_);
-                }
+                m_users.Add(sender_);
+                m_users.Add(recipient_);
+            }
 
-                var msg = new Message(author_, content_);
-                msgs.Add(msg);
+            // We're reasonably sure that locking on the object itself
+            // is side-effect-free, since we own it and don't give refs out.
+            var msg = new Message(sender_, content_, recipient_, true);
+            lock (m_messages)
+            {
+                m_messages.Add(msg);
                 msg.MarkDelivered();
             }
 
             return OpStatus.Ok;
         }
 
-        public OpStatus PushBroadcast(string author_, string channel_, string content_)
+        public OpStatus PushBroadcast(string sender_, string channel_, string content_)
         {
-            HashSet<string> users = null;
-            if (!m_chanSubs.TryGetValue(channel_, out users))
+            var channelUsers = ChannelUsers(channel_);
+            if (!channelUsers.Contains(sender_))
                 return OpStatus.NotSubscribed;
 
-            string[] usersLocal = null;
-            lock (m_users)
+            foreach (var user in channelUsers)
             {
-                usersLocal = new string[users.Count];
-                if (!users.Contains(author_))
-                    return OpStatus.NotSubscribed;
-
-                users.CopyTo(usersLocal);
-            }
-
-            foreach (var user in usersLocal)
-            {
-                var msgs = m_messages.GetOrAdd(user, _ => new HashSet<IMessage>());
-                lock (msgs)
+                var msg = new Message(sender_, content_, channel_, false);
+                lock (m_messages)
                 {
-                    var msg = new Message(author_, content_);
-                    msgs.Add(msg);
+                    m_messages.Add(msg);
                     msg.MarkDelivered();
                 }
             }

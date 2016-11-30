@@ -128,7 +128,7 @@ namespace MessageKeep.Tests
 
         [Theory]
         [InlineData("user-1", "channel-1")]
-        public void mismatched_broadcast_returns_NoSubscribed(string username_, string channel_)
+        public void mismatched_broadcast_returns_NotSubscribed(string username_, string channel_)
         {
             IBackStore store = new BackStore();
 

@@ -43,7 +43,6 @@ namespace MessageKeep
             config.MapHttpAttributeRoutes();
 
             var di = new DryIoc.Container();
-            di.RegisterInstance<IServiceConfig>(new ServiceConfig(), Reuse.Singleton);
             di.RegisterInstance<IBackStore>(new BackStore(), Reuse.Singleton);
 
             di.WithWebApi(config);

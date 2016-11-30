@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,20 +12,26 @@ namespace MessageKeep.Core
 {
     class Message : IMessage
     {
-        readonly int m_id = DateTime.UtcNow.GetHashCode();
-        readonly string m_author;
+        readonly uint m_id = (uint) DateTime.UtcNow.GetHashCode();
+        readonly string m_sender;
         readonly string m_content;
+        readonly string m_recipient;
+        readonly bool m_isDirect;
         DateTime m_deliveredUtc = DateTime.MinValue;
 
-        public Message(string author_, string content_)
+        public Message(string sender_, string content_, string recipient_, bool isDirect_)
         {
-            m_author = author_;
+            m_sender = sender_;
             m_content = content_;
+            m_recipient = recipient_;
+            m_isDirect = isDirect_;
         }
 
-        public int Id => m_id;
-        public string Author => m_author;
+        public uint Id => m_id;
+        public string Sender => m_sender;
         public string Content => m_content;
+        public string Recipient => m_recipient;
+        public bool IsDirect => m_isDirect;
         public DateTime DeliveredUtc => m_deliveredUtc;
 
         public void MarkDelivered()
@@ -37,7 +44,7 @@ namespace MessageKeep.Core
 
         public override int GetHashCode()
         {
-            return m_id;
+            return (int) m_id;
         }
 
         public override bool Equals(object otherObj_)
