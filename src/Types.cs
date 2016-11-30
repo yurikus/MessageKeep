@@ -36,6 +36,9 @@ namespace MessageKeep.Types
 }
 
 /*
+This application implements a hypothetical cloud user/message/channel management service. 
+
+##Endpoints:
 
 +   GET      /users                                       list of users
 +   GET      /users/<user>                                summary of user's subbed channels and dm
@@ -47,7 +50,6 @@ namespace MessageKeep.Types
 +   PUT      /users/<user>/channel/<chan>                 subscribe user to channel
 +   DELETE   /users/<user>/channel/<chan>                 unsubscibe user from channel
 +   POST     /users/<user>/channel/<chan>                 post a message to channel
-        
                                                            
 +   GET      /channels                                    list of channels
 +   GET      /channels/<chan>/users                       summary of subbed users and message count

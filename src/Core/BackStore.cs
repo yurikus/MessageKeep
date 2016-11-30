@@ -16,8 +16,9 @@ namespace MessageKeep.Core
         // I opted for a single message store vs message queue per user channel.
         // This simplifies things a bit by using flags on the message instance to
         // distinguish direct vs broadcast. It also comes with a couple of drawbacks: 
-        // not having distict delivery timers per user and temporarity lost history
+        // not having distict delivery timers per user and temporarily lost history
         // of messages broadcast to a channel after user unsubscribes from it.
+        // User is able to get the history back by subscribing to the channel again.
         readonly HashSet<IMessage> m_messages;
 
         // channel => channel users
